@@ -1,6 +1,4 @@
-How to deploy the app
-
-# ติดตั้ง
+# How to deploy the app
 
 npm install
 
@@ -12,9 +10,7 @@ npx sst deploy
 
 npx sst outputs
 
-How to test the app
-
-# รัน unit tests (Jest)
+# How to test the app
 
 npm test
 
@@ -22,7 +18,7 @@ npm test
 
 npx jest --clearCache && npm test
 
-Architecture overview
+# Architecture overview
 
 Cognito User Pool — สมัคร/ยืนยัน/ล็อกอิน, ออก JWT (IdToken)
 
@@ -32,7 +28,8 @@ Lambda (Node.js 20 + TypeScript) — handlers ของ /auth/\* และ /prof
 
 DynamoDB — ตาราง Profiles (PK: userId = sub) เก็บ email, name, createdAt (ISO 8601)
 
-Sample unit test results
+# Sample unit test results
+
 PASS packages/functions/**tests**/getProfile.test.ts
 ✓ 200 ok (xx ms)
 ✓ 404 not found (xx ms)
