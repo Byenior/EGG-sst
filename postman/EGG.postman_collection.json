@@ -1,0 +1,349 @@
+{
+	"info": {
+		"_postman_id": "ec1d0546-43e0-4713-8163-aeea12649f3d",
+		"name": "EGG",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32590234"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"nathaphong.won@gmail.com\",\n  \"password\": \"P@ssw0rd123!\",\n  \"name\": \"ju nior\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/auth/signup",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signup Confirm",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"nathaphong.won@gmail.com\",\n    \"code\": \"913013\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/auth/confirm",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"auth",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const body = pm.response.json();",
+									"",
+									"pm.test(\"should return IdToken\", () => {",
+									"  pm.expect(body).to.have.property(\"tokens\");",
+									"  pm.expect(body.tokens).to.have.property(\"IdToken\");",
+									"});",
+									"",
+									"pm.environment.set(\"ID_TOKEN\", body.tokens.IdToken);",
+									"pm.environment.set(\"ACCESS_TOKEN\", body.tokens.AccessToken);",
+									"pm.environment.set(\"REFRESH_TOKEN\", body.tokens.RefreshToken);",
+									"// try {",
+									"//   const id = pm.environment.get(\"ID_TOKEN\");",
+									"//   const payload = JSON.parse(Buffer.from(id.split(\".\")[1], \"base64\").toString(\"utf8\"));",
+									"//   console.log(\"idToken payload:\", payload); // ดู token_use, iss, aud",
+									"//   pm.test(\"token_use is id\", () => pm.expect(payload.token_use).to.eql(\"id\"));",
+									"// } catch (e) {",
+									"//   console.warn(\"cannot decode ID_TOKEN:\", e.message);",
+									"// }",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"nathaphong.won@gmail.com\",\n    \"password\": \"P@ssw0rd123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/auth/login",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "dev",
+			"item": [
+				{
+					"name": "test",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/test",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "debug env",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"nathaphong.won@gmail.com\",\n    \"code\": \"019216\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/debug/env",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"debug",
+								"env"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check JWT",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ID_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ID_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"nathaphong.won@gmail.com\",\n    \"code\": \"019216\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/__dev__/check-jwt",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"__dev__",
+								"check-jwt"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"nathaphong.won@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/__dev__/delete-user",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"__dev__",
+								"delete-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "look user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"nathaphong.won@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/__dev__/lookup-user",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"__dev__",
+								"lookup-user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "profile",
+			"item": [
+				{
+					"name": "get profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{idToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/profile",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{idToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"nathaphong.won@gmail.com\",\n  \"name\": \"ชื่อใหม่\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/profile",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
