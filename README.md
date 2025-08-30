@@ -48,9 +48,3 @@ Tests: 6 passed, 6 total
 Snapshots: 0 total
 Time: 10.1 s
 Ran all test suites.
-
-หมายเหตุสั้น ๆ
-
-เรียก GET/PUT /profile ต้องใช้ IdToken (ไม่ใช่ AccessToken)
-
-เปลี่ยนชื่อสำเร็จแล้ว Claim ในโทเค็นจะอัปเดตหลัง refresh/re-login; ฝั่งแอปควรอ้างอิงค่าล่าสุดจาก GET /profile เป็นหลัก
