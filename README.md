@@ -6,10 +6,6 @@ npm install
 
 npx sst deploy
 
-# ดูค่า Outputs (เช่น ApiUrl, UserPoolClientId)
-
-npx sst outputs
-
 # How to test the app
 
 npm test
