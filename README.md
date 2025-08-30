@@ -1,7 +1,7 @@
 Serverless Web App Challenge (AWS + TypeScript)
 Overview
 
-Serverless web app ด้วย AWS SST: Cognito (สมัคร/ล็อกอิน), API Gateway (JWT Authorizer), Lambda (TypeScript), DynamoDB (เก็บโปรไฟล์: userId, email, name, createdAt).
+Serverless web app ด้วย AWS SST: Cognito (สมัคร/ล็อกอิน), API Gateway (JWT Authorizer), Lambda (TypeScript), DynamoDB (เก็บโปรไฟล์: userId, email, name, createdAt)
 
 Prerequisites
 
@@ -19,24 +19,28 @@ npm install
 
 # Local dev (hot reload)
 
-npx sst dev
+npx sst dev --stage=dev
 
 # Deploy to AWS
 
-npx sst deploy
+npx sst deploy --stage=dev
 
 # ดูค่า Outputs (เช่น ApiUrl/UserPoolClientId)
 
 npx sst outputs
 
-### Dev Utilities (optional)
+Dev Utilities (optional)
 
-Dev routes (`/__dev__/*`) are **disabled by default**.
-Enable for demo:
+Dev routes (/**dev**/\*) ปิดโดยค่าเริ่มต้น
+เปิดเพื่อเดโม:
 
-```bash
-ENABLE_DEV_ROUTES=true npx sst deploy
+# เปิด dev routes ชั่วคราว
 
+ENABLE_DEV_ROUTES=true npx sst dev --stage=dev
+
+# หรือ deploy พร้อม dev routes
+
+ENABLE_DEV_ROUTES=true npx sst deploy --stage=dev
 
 Outputs
 
@@ -82,14 +86,18 @@ curl -X PUT -H 'Content-Type: application/json' \
  -H "Authorization: Bearer $ID_TOKEN" \
  -d '{"name":"New Name"}' $ApiUrl/profile
 
-หมายเหตุ: ต้องใช้ IdToken เท่านั้น (token_use = "id"), ไม่ใช่ AccessToken
+หมายเหตุ
+
+ต้องใช้ IdToken เท่านั้น (token_use = "id") ไม่ใช่ AccessToken
+
+ถ้าเพิ่งเปลี่ยนชื่อด้วย PUT /profile แล้วอยากให้ claim ในโทเค็นสะท้อนค่าล่าสุด ให้ refresh token/re-login หรือใช้ค่า name จาก GET /profile เป็น source of truth ฝั่ง UI
 
 Testing
 npm test
 
-# (ถ้าเคยเปลี่ยน config เยอะ ลอง)
+# (ถ้าเคยเปลี่ยน config เยอะ)
 
-# npx jest --clearCache && npm test
+npx jest --clearCache && npm test
 
 ตัวอย่างผล (คาดหวัง):
 
@@ -97,7 +105,7 @@ GET /profile: 200 (มีโปรไฟล์) / 404 (ไม่มี) / 500 (D
 
 PUT /profile: 400 (ไม่มีฟิลด์อัปเดต) / 200 (สำเร็จ) / 500 (DynamoDB error)
 
-401 (ไม่มี claims) เมื่อไม่ส่ง Authorization: Bearer <IdToken>
+401 เมื่อไม่ส่ง Authorization: Bearer <IdToken>
 
 Architecture
 
@@ -107,11 +115,20 @@ API Gateway (HTTP API v2 + JWT Authorizer) — ป้องกัน /profile �
 
 Lambda (Node.js 20 + TypeScript) — handlers ของ /auth/\* และ /profile
 
-DynamoDB — ตาราง Profiles (PK: userId=sub), เก็บ email, name, createdAt (ISO timestamp)
+DynamoDB — ตาราง Profiles (PK: userId = sub), เก็บ email, name, createdAt (ISO)
+
+Notes
+
+createdAt ถูกใส่ครั้งแรกตอนสร้างโปรไฟล์ (เช่นหลัง confirm) และไม่แก้ไขใน PUT /profile
+
+Dev routes (/**dev**/lookup-user, **dev**/check-jwt) เปิดได้เฉพาะตอนเดโม และล็อกด้วย JWT + allowlist อีเมล
+
+CORS เปิดแบบง่าย (cors: true) สำหรับงานนี้ (โปรดักชันควรจำกัด origin)
 
 Cleanup
 
 # ลบทรัพยากรทั้งหมดของสแตก
 
-npx sst remove
-```
+npx sst remove --stage=dev
+
+(ถ้ามี Postman collection ให้เพิ่มโฟลเดอร์ postman/ และลิงก์ไฟล์ใน README ได้อีกนิด จะยิ่งใช้งานง่ายขึ้น)
